@@ -17,10 +17,16 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "paths": {
       "@utils/*": ["src/utils/*"],
+      "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
-      "@entities/*": ["src/entities/*"]
+      "@database/*": ["src/database/*"],
+      "@entities/*": ["src/entities/*"],
+      "@decorators/*": ["src/decorators/*"],
+      "@interfaces/*": ["src/interfaces/*"]
     }
-  }
+  },
+  "types": ["src/@types", "./node_modules/@types"]
 }
