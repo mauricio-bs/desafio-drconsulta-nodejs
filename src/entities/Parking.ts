@@ -22,8 +22,8 @@ export class Parking extends BaseEntity {
   @Column({ type: 'datetime' })
   started_at: Date;
 
-  @Column({ type: 'datetime' })
-  ended_at: Date;
+  @Column({ type: 'datetime', nullable: true })
+  ended_at?: Date;
 
   @CreateDateColumn()
   created_at: Date;
