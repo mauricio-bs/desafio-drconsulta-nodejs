@@ -17,19 +17,19 @@ export class CompanyService implements ICompanyService {
   ) {}
 
   async create(data: CreateCompanyDTO): Promise<Company> {
-    return this.repository.create(data)[0];
+    return this.repository.create(data);
   }
 
   async update(id: string, data: UpdateCompanyDTO): Promise<Company> {
-    const company = this.repository.findOneBy({ id });
-    if (!company) throw new NotFoundException('Company not found');
+    if (!(await this.repository.existsBy({ id })))
+      throw new NotFoundException('Company not found');
 
     return (await this.repository.update({ id }, data)) as unknown as Company;
   }
 
   async delete(id: string): Promise<void> {
-    const company = this.repository.findOneBy({ id });
-    if (!company) throw new NotFoundException('Company not found');
+    if (!(await this.repository.existsBy({ id })))
+      throw new NotFoundException('Company not found');
 
     await this.repository.softDelete({ id });
   }
@@ -39,6 +39,34 @@ export class CompanyService implements ICompanyService {
   }
 
   async findAll(filters: FindManyCompaniesDTO): Promise<PaginatedCompaniesDTO> {
-    throw new Error('Method not implemented.');
+    let query = this.repository
+      .createQueryBuilder('company')
+      .skip((filters.page - 1) * filters.limit)
+      .take(filters.limit);
+
+    if (filters.id.length)
+      query = query.andWhere('company.id IN (:...ids)', { ids: filters.id });
+
+    if (filters.name) {
+      query = query.andWhere('company.name ILIKE :name', {
+        name: `%${filters.name}%`,
+      });
+    }
+
+    if (filters.document) {
+      query = query.andWhere('company.document ILIKE :document', {
+        document: `%${filters.document}%`,
+      });
+    }
+
+    if (filters.phone) {
+      query = query.andWhere('company.phone ILIKE :phone', {
+        phone: `%${filters.phone}%`,
+      });
+    }
+
+    const [data, total] = await query.getManyAndCount();
+
+    return { total, data };
   }
 }

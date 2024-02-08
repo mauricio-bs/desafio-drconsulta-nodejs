@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -20,7 +21,9 @@ import {
   ApiOkResponse,
   ApiParam,
   ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
+import { JWTAuthGuard } from 'src/guards/Auth.guard';
 
 import { Company } from '@entities/Company';
 
@@ -30,26 +33,29 @@ import { PaginatedCompaniesDTO } from '../dto/paginated-companies.dto';
 import { UpdateCompanyDTO } from '../dto/update-company.dto';
 import { ICompanyService } from '../service/Icompany.service';
 
+@ApiTags('Company')
 @Controller('company')
 export class CompanyController {
   constructor(private service: ICompanyService) {}
 
+  @UseGuards(JWTAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   // Documentation
   @ApiBody({ type: CreateCompanyDTO, required: true })
-  @ApiCreatedResponse({ description: 'Company created!' })
+  @ApiCreatedResponse({ description: 'Company created!', type: Company })
   @ApiBadRequestResponse({ description: 'Invalid data types / Missing data' })
   async create(@Body() data: CreateCompanyDTO): Promise<Company> {
     return await this.service.create(data);
   }
 
+  @UseGuards(JWTAuthGuard)
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
   @ApiParam({ name: 'company_id', required: true })
   @ApiBody({ type: UpdateCompanyDTO, required: false })
-  @ApiOkResponse({ description: 'Company updated!' })
+  @ApiOkResponse({ description: 'Company updated!', type: Company })
   @ApiBadRequestResponse({ description: 'Invalid data types' })
   @ApiNotFoundResponse({ description: 'Company not found' })
   async update(
@@ -59,21 +65,23 @@ export class CompanyController {
     return await this.service.update(id, data);
   }
 
+  @UseGuards(JWTAuthGuard)
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
   @ApiParam({ name: 'company_id', required: true })
-  @ApiOkResponse({ description: 'Company found!' })
+  @ApiOkResponse({ description: 'Company found!', type: Company })
   @ApiNotFoundResponse({ description: 'Company not found' })
   async findById(@Param('id', ParseUUIDPipe) id: string): Promise<Company> {
     return await this.service.findOneById(id);
   }
 
+  @UseGuards(JWTAuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   // Documentation
-  @ApiQuery({ type: PaginatedCompaniesDTO, required: false, name: 'filters' })
-  @ApiOkResponse({ description: 'OK' })
+  @ApiQuery({ type: FindManyCompaniesDTO, required: false, name: 'filters' })
+  @ApiOkResponse({ description: 'OK', type: PaginatedCompaniesDTO })
   @ApiBadRequestResponse({ description: 'Invalid filter types' })
   async findAll(
     @Query() filters: FindManyCompaniesDTO,
@@ -81,6 +89,7 @@ export class CompanyController {
     return await this.service.findAll(filters);
   }
 
+  @UseGuards(JWTAuthGuard)
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   // Documentation

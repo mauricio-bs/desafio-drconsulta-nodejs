@@ -6,7 +6,9 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class FindManyCompaniesDTO {
+import { PaginationDTO } from '@shared/dto/pagination.dto';
+
+export class FindManyCompaniesDTO extends PaginationDTO {
   @IsOptional()
   @IsArray()
   @IsUUID('4', { each: true })
