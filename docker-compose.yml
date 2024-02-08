@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  garage-manager-api:
+    build: .
+    container_name: garage_manager_api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql_db
+
+  mysql_db:
+    image: mysql:8
+    container_name: garage_manager_db
+    restart: unless-stopped
+    ports:
+      - '3306:3306'
+    volumes:
+      - .docker/dbData/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+      - MYSQL_DATABASE=$DB_NAME
