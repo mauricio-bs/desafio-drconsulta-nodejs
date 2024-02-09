@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 import { Repository } from 'typeorm';
 
@@ -10,7 +11,10 @@ import { IUserService } from './Iuser.service';
 
 @Injectable()
 export class Userservice implements IUserService {
-  constructor(private repository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User)
+    private repository: Repository<User>,
+  ) {}
 
   async create(data: CreateUserDTO): Promise<User> {
     delete data.confirm_password;
