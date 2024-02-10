@@ -10,6 +10,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { EVehicleType } from '@enum/EVehicleType';
+
 import { Company } from './Company';
 import { Parking } from './Parking';
 
@@ -24,8 +26,8 @@ export class Vehicle extends BaseEntity {
   @Column()
   color: string;
 
-  @Column()
-  type: string;
+  @Column({ type: 'enum', enum: EVehicleType })
+  type: EVehicleType;
 
   @Column()
   licence_plate: string;

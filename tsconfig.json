@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "paths": {
+      "@enum/*": ["src/enum/*"],
       "@utils/*": ["src/utils/*"],
       "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
