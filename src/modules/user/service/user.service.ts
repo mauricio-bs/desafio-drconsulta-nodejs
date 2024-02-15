@@ -1,20 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
-import { Repository } from 'typeorm';
 
 import { User } from '@entities/User.entity';
 
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
+import { IUserRepository } from '../repository/IUserRepository';
 import { IUserService } from './Iuser.service';
 
 @Injectable()
 export class Userservice implements IUserService {
-  constructor(
-    @InjectRepository(User)
-    private repository: Repository<User>,
-  ) {}
+  constructor(private repository: IUserRepository) {}
 
   async create(data: CreateUserDTO): Promise<User> {
     delete data.confirm_password;
@@ -24,20 +20,20 @@ export class Userservice implements IUserService {
   }
 
   async update(id: string, data: UpdateUserDTO): Promise<User> {
-    if (!(await this.repository.existsBy({ id })))
+    if (!(await this.repository.exists(id)))
       throw new NotFoundException('User not found');
 
-    return (await this.repository.update({ id }, data)) as unknown as User;
+    return (await this.repository.update(id, data)) as unknown as User;
   }
 
   async delete(id: string): Promise<void> {
-    if (!(await this.repository.existsBy({ id })))
+    if (!(await this.repository.exists(id)))
       throw new NotFoundException('User not found');
 
-    await this.repository.softDelete({ id });
+    await this.repository.softDelete(id);
   }
 
   async findOneById(id: string): Promise<User> {
-    return await this.repository.findOneBy({ id });
+    return await this.repository.findOneById(id);
   }
 }

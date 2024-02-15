@@ -1,13 +1,13 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { v4 } from 'uuid';
 
 import { DatabaseModule } from '@database/database.module';
 import { User } from '@entities/User.entity';
 import { CreateUserDTO } from '@modules/user/dto/create-user.dto';
 import { UpdateUserDTO } from '@modules/user/dto/update-user.dto';
+import { IUserRepository } from '@modules/user/repository/IUserRepository';
 
 import { IUserService } from '../Iuser.service';
 import { Userservice } from '../user.service';
@@ -15,7 +15,7 @@ import { userMock } from './mockedUser';
 
 describe('UserServicce', () => {
   let service: IUserService;
-  let repository: Repository<User>;
+  let repository: jest.Mocked<IUserRepository>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -27,12 +27,21 @@ describe('UserServicce', () => {
       providers: [
         ConfigService,
         { provide: IUserService, useClass: Userservice },
-        { provide: getRepositoryToken(User), useClass: User },
+        {
+          provide: IUserRepository,
+          useValue: {
+            create: jest.fn(),
+            update: jest.fn(),
+            softDelete: jest.fn(),
+            findOneById: jest.fn(),
+            exists: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<IUserService>(IUserService);
-    repository = module.get<Repository<User>>(getRepositoryToken(User));
+    repository = module.get(IUserRepository);
   });
 
   it('should be defined', () => {
@@ -53,12 +62,15 @@ describe('UserServicce', () => {
         };
 
         // Mocked functions
-        jest.spyOn(repository, 'create').mockResolvedValueOnce({
-          id: v4(),
-          ...data,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
+        repository.create.mockImplementationOnce(
+          async (user_data) =>
+            ({
+              id: v4(),
+              ...user_data,
+              created_at: new Date(),
+              updated_at: new Date(),
+            }) as unknown as User,
+        );
 
         // Execution
         const sut = await service.create(data);
@@ -80,18 +92,19 @@ describe('UserServicce', () => {
         const data: UpdateUserDTO = { name: 'updated name' };
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(false);
-        jest
-          .spyOn(repository, 'update')
-          .mockResolvedValueOnce({ ...userMock[0], ...data });
+        repository.exists.mockResolvedValueOnce(false);
+        repository.update.mockResolvedValueOnce({
+          ...userMock[0],
+          ...data,
+        } as User);
 
         // Execution | Audition
         expect(service.update(id, data)).rejects.toThrow('User not found');
         expect(
           service.update(id, data),
         ).rejects.toThrowErrorMatchingInlineSnapshot();
-        expect(repository.existsBy).toHaveBeenCalledTimes(2);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.exists).toHaveBeenCalledTimes(2);
+        expect(repository.exists).toHaveBeenCalledWith(id);
         expect(repository.update).not.toHaveBeenCalled();
       });
     });
@@ -103,10 +116,11 @@ describe('UserServicce', () => {
         const data: UpdateUserDTO = { name: 'updated name' };
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(false);
-        jest
-          .spyOn(repository, 'update')
-          .mockResolvedValueOnce({ ...userMock[0], ...data });
+        repository.exists.mockResolvedValueOnce(false);
+        repository.update.mockResolvedValueOnce({
+          ...userMock[0],
+          ...data,
+        } as User);
 
         // Execution
         const sut = await service.update(id, data);
@@ -114,10 +128,10 @@ describe('UserServicce', () => {
         // Audition
         expect(sut).toMatchObject(data);
         expect(sut).toHaveProperty('id', id);
-        expect(repository.existsBy).toHaveBeenCalledTimes(1);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.exists).toHaveBeenCalledTimes(1);
+        expect(repository.exists).toHaveBeenCalledWith(id);
         expect(repository.update).toHaveBeenCalledTimes(1);
-        expect(repository.update).toHaveBeenCalledWith({ id }, data);
+        expect(repository.update).toHaveBeenCalledWith(id, data);
       });
     });
   });
@@ -129,14 +143,14 @@ describe('UserServicce', () => {
         const id = userMock[0].id;
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(false);
-        jest.spyOn(repository, 'softDelete').mockResolvedValueOnce(undefined);
+        repository.exists.mockResolvedValueOnce(false);
+        repository.softDelete.mockResolvedValueOnce(undefined);
 
         // Execution | Audition
         expect(service.delete(id)).rejects.toThrow('User not found');
         expect(service.delete(id)).rejects.toThrowErrorMatchingInlineSnapshot();
-        expect(repository.existsBy).toHaveBeenCalledTimes(2);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.exists).toHaveBeenCalledTimes(2);
+        expect(repository.exists).toHaveBeenCalledWith(id);
         expect(repository.softDelete).not.toHaveBeenCalled();
       });
     });
@@ -147,16 +161,16 @@ describe('UserServicce', () => {
         const id = userMock[0].id;
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(false);
-        jest.spyOn(repository, 'softDelete').mockResolvedValueOnce(undefined);
+        repository.exists.mockResolvedValueOnce(false);
+        repository.softDelete.mockResolvedValueOnce(undefined);
 
         // Execution
         const sut = await service.delete(id);
 
         // Audition
         expect(sut).toBeUndefined();
-        expect(repository.existsBy).toHaveBeenCalledTimes(1);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.exists).toHaveBeenCalledTimes(1);
+        expect(repository.exists).toHaveBeenCalledWith(id);
         expect(repository.softDelete).toHaveBeenCalledTimes(1);
         expect(repository.softDelete).toHaveBeenCalledWith({ id });
       });
@@ -170,20 +184,17 @@ describe('UserServicce', () => {
         const id = userMock[0].id;
 
         // Mocked functions
-        jest
-          .spyOn(repository, 'findOneBy')
-          .mockImplementationOnce(
-            async ({ where }) =>
-              userMock.find((user) => user.id === where?.id) as User,
-          );
+        repository.findOneById.mockImplementationOnce(
+          async (id) => userMock.find((user) => user.id === id) as User,
+        );
 
         // Execution
         const sut = await service.findOneById(id);
 
         // Audition
         expect(sut).toHaveProperty('id', id);
-        expect(repository.findOneBy).toHaveBeenCalledTimes(1);
-        expect(repository.findOneBy).toHaveBeenCalledWith({ id });
+        expect(repository.findOneById).toHaveBeenCalledTimes(1);
+        expect(repository.findOneById).toHaveBeenCalledWith(id);
       });
     });
   });
