@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Company } from './Company';
+import { Company } from './Company.entity';
 
 @Entity({ name: 'address' })
 export class Address extends BaseEntity {
@@ -48,5 +48,5 @@ export class Address extends BaseEntity {
 
   // Relations
   @OneToOne(() => Company, (company) => company.address)
-  company: Company;
+  company?: Company;
 }

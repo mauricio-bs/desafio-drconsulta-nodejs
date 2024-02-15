@@ -25,7 +25,7 @@ import {
 import { JWTAuthGuard } from 'src/guards/Auth.guard';
 
 import { UserInfo } from '@decorators/User.decorator';
-import { User } from '@entities/User';
+import { User } from '@entities/User.entity';
 
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';

@@ -8,7 +8,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { Company } from '@entities/Company';
+import { Company } from '@entities/Company.entity';
 
 export class UpdateCompanyDTO
   implements

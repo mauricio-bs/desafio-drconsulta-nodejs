@@ -11,8 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Address } from './Address';
-import { Vehicle } from './Vehicle';
+import { Address } from './Address.entity';
+import { Vehicle } from './Vehicle.entity';
 
 @Entity('company')
 export class Company extends BaseEntity {
@@ -45,7 +45,7 @@ export class Company extends BaseEntity {
 
   // Relations
   @OneToMany(() => Vehicle, (vehicle) => vehicle.company)
-  vehicles: Vehicle[];
+  vehicles?: Vehicle[];
 
   @OneToOne(() => Address, (address) => address.company)
   @JoinColumn()

@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Vehicle } from './Vehicle';
+import { Vehicle } from './Vehicle.entity';
 
 @Entity({ name: 'parking' })
 export class Parking extends BaseEntity {

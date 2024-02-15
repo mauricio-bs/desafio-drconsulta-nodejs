@@ -1,4 +1,4 @@
-import { Company } from '@entities/Company';
+import { Company } from '@entities/Company.entity';
 
 export class PaginatedCompaniesDTO {
   total: number;

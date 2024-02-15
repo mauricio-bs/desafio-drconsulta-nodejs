@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 
 import { Match } from '@decorators/Match.decorator';
-import { User } from '@entities/User';
+import { User } from '@entities/User.entity';
 
 export class CreateUserDTO
   implements

@@ -11,8 +11,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { Address } from '@entities/Address';
-import { Company } from '@entities/Company';
+import { Address } from '@entities/Address.entity';
+import { Company } from '@entities/Company.entity';
 
 class CreateAddress
   implements

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { DatabaseModule } from '@database/database.module';
-import { User } from '@entities/User';
+import { User } from '@entities/User.entity';
 import { CreateUserDTO } from '@modules/user/dto/create-user.dto';
 import { UpdateUserDTO } from '@modules/user/dto/update-user.dto';
 

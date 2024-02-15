@@ -12,8 +12,8 @@ import {
 
 import { EVehicleType } from '@enum/EVehicleType';
 
-import { Company } from './Company';
-import { Parking } from './Parking';
+import { Company } from './Company.entity';
+import { Parking } from './Parking.entity';
 
 @Entity({ name: 'vehicle' })
 export class Vehicle extends BaseEntity {

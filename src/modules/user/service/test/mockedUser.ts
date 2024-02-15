@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 
-import { User } from '@entities/User';
+import { User } from '@entities/User.entity';
 
 export const userMock: Omit<
   User,

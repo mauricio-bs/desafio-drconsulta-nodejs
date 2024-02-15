@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { JWTAuthGuard } from 'src/guards/Auth.guard';
 
-import { Company } from '@entities/Company';
+import { Company } from '@entities/Company.entity';
 
 import { CreateCompanyDTO } from '../dto/create-company.dto';
 import { FindManyCompaniesDTO } from '../dto/find-many-companies.dto';

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcryptjs';
 import { Repository } from 'typeorm';
 
-import { User } from '@entities/User';
+import { User } from '@entities/User.entity';
 
 import { SignInDTO } from '../dto/signin.dto';
 import { IAuthService } from './Iauth.service';
