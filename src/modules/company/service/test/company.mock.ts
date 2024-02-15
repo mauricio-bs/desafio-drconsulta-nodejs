@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 
-import { Address } from '@entities/Address';
-import { Company } from '@entities/Company';
+import { Address } from '@entities/Address.entity';
+import { Company } from '@entities/Company.entity';
 
 export const companyMock: Array<
   Omit<

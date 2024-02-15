@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { v4 } from 'uuid';
 
 import { DatabaseModule } from '@database/database.module';
-import { Company } from '@entities/Company';
+import { Address } from '@entities/Address.entity';
+import { Company } from '@entities/Company.entity';
+import { Parking } from '@entities/Parking.entity';
+import { Vehicle } from '@entities/Vehicle.entity';
 import { CreateCompanyDTO } from '@modules/company/dto/create-company.dto';
 import { UpdateCompanyDTO } from '@modules/company/dto/update-company.dto';
+import { ICompanyRepository } from '@modules/company/repository/ICompanyRepository';
 
 import { CompanyService } from '../company.service';
 import { ICompanyService } from '../Icompany.service';
@@ -15,24 +19,33 @@ import { companyMock } from './company.mock';
 
 describe('Company service', () => {
   let service: ICompanyService;
-  let repository: Repository<Company>;
+  let repository: jest.Mocked<ICompanyRepository>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
         DatabaseModule,
-        TypeOrmModule.forFeature([Company]),
+        TypeOrmModule.forFeature([Company, Address, Vehicle, Parking]),
       ],
       providers: [
         ConfigService,
         { provide: ICompanyService, useClass: CompanyService },
-        { provide: getRepositoryToken(Company), useClass: Company },
+        {
+          provide: ICompanyRepository,
+          useValue: {
+            create: jest.fn(),
+            update: jest.fn(),
+            existById: jest.fn(),
+            findOneById: jest.fn(),
+            softDelete: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
-    service = module.get<ICompanyService>(ICompanyService);
-    repository = module.get<Repository<Company>>(getRepositoryToken(Company));
+    service = module.get(ICompanyService);
+    repository = module.get(ICompanyRepository);
   });
 
   it('should be defined', () => {
@@ -61,9 +74,12 @@ describe('Company service', () => {
         };
 
         // Mocked functions
-        jest
-          .spyOn(repository, 'create')
-          .mockResolvedValueOnce({ id: v4(), ...data });
+        repository.create.mockResolvedValueOnce({
+          id: v4(),
+          ...data,
+          created_at: new Date(),
+          updated_at: new Date(),
+        } as Company);
 
         // Execution
         const sut = await service.create(data);
@@ -85,15 +101,15 @@ describe('Company service', () => {
         const data: UpdateCompanyDTO = { car_parking_spaces: 10 };
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(undefined);
+        repository.existById.mockResolvedValueOnce(undefined);
 
         // Execution | Audition
         expect(service.update(id, data)).rejects.toThrow('Company not found');
         expect(
           service.update(v4(), data),
         ).rejects.toThrowErrorMatchingInlineSnapshot();
-        expect(repository.existsBy).toHaveBeenCalledTimes(1);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.existById).toHaveBeenCalledTimes(1);
+        expect(repository.existById).toHaveBeenCalledWith({ id });
       });
     });
 
@@ -104,12 +120,13 @@ describe('Company service', () => {
         const data: UpdateCompanyDTO = { car_parking_spaces: 10 };
 
         // Mocked functions
-        jest
-          .spyOn(repository, 'existsBy')
-          .mockImplementationOnce(
-            async (where) =>
-              !!companyMock.find((company) => company.id === where?.id),
-          );
+        repository.existById.mockImplementationOnce(
+          async (id) => !!companyMock.find((company) => company.id === id),
+        );
+        repository.update.mockResolvedValueOnce({
+          ...companyMock[0],
+          ...data,
+        } as Company);
 
         // Execution
         const sut = await service.update(id, data);
@@ -117,8 +134,10 @@ describe('Company service', () => {
         // Audition
         expect(sut.id).toEqual(id);
         expect(sut).toMatchObject(data);
-        expect(repository.findOneBy).toHaveBeenCalledTimes(1);
-        expect(repository.findOneBy).toHaveBeenCalledWith({ id }, data);
+        expect(repository.existById).toHaveBeenCalledTimes(1);
+        expect(repository.existById).toHaveBeenCalledWith(id);
+        expect(repository.findOneById).toHaveBeenCalledTimes(1);
+        expect(repository.findOneById).toHaveBeenCalledWith(id, data);
       });
     });
   });
@@ -129,13 +148,13 @@ describe('Company service', () => {
         const id = v4();
 
         // Mocked functions
-        jest.spyOn(repository, 'existsBy').mockResolvedValueOnce(undefined);
+        repository.existById.mockResolvedValueOnce(undefined);
 
         // Execution | Audition
         expect(service.delete(id)).rejects.toThrow('Company not found');
         expect(service.delete(id)).rejects.toThrowErrorMatchingInlineSnapshot();
-        expect(repository.existsBy).toHaveBeenCalledTimes(1);
-        expect(repository.existsBy).toHaveBeenLastCalledWith({ id });
+        expect(repository.existById).toHaveBeenCalledTimes(1);
+        expect(repository.existById).toHaveBeenLastCalledWith(id);
       });
     });
 
@@ -145,23 +164,20 @@ describe('Company service', () => {
         const id = companyMock[0].id;
 
         // Mocked functions
-        jest
-          .spyOn(repository, 'existsBy')
-          .mockImplementationOnce(
-            async (where) =>
-              !!companyMock.find((company) => company.id === where?.id),
-          );
-        jest.spyOn(repository, 'softDelete').mockResolvedValueOnce(undefined);
+        repository.existById.mockImplementationOnce(
+          async (id) => !!companyMock.find((company) => company.id === id),
+        );
+        repository.softDelete.mockResolvedValueOnce(companyMock[0] as Company);
 
         // Execution
         const sut = await service.delete(id);
 
         // Audition
         expect(sut).toBeUndefined();
-        expect(repository.existsBy).toHaveBeenCalledTimes(1);
-        expect(repository.existsBy).toHaveBeenCalledWith({ id });
+        expect(repository.existById).toHaveBeenCalledTimes(1);
+        expect(repository.existById).toHaveBeenCalledWith(id);
         expect(repository.softDelete).toHaveBeenCalledTimes(1);
-        expect(repository.softDelete).toHaveBeenCalledWith({ id });
+        expect(repository.softDelete).toHaveBeenCalledWith(id);
       });
     });
   });
@@ -173,22 +189,20 @@ describe('Company service', () => {
         const id = companyMock[0].id;
 
         // Mocked functions
-        jest
-          .spyOn(repository, 'findOneBy')
-          .mockImplementationOnce(
-            async (where) =>
-              companyMock.find(
-                (company) => company.id === where?.id,
-              ) as unknown as Company,
-          );
+        repository.findOneById.mockImplementationOnce(
+          async (id) =>
+            companyMock.find(
+              (company) => company.id === id,
+            ) as unknown as Company,
+        );
 
         // Execution
         const sut = await service.findOneById(id);
 
         // Audition
         expect(sut).toHaveProperty('id', id);
-        expect(repository.findOneBy).toHaveBeenCalledTimes(1);
-        expect(repository.findOneBy).toHaveBeenCalledWith({ id });
+        expect(repository.findOneById).toHaveBeenCalledTimes(1);
+        expect(repository.findOneById).toHaveBeenCalledWith(id);
       });
     });
   });
