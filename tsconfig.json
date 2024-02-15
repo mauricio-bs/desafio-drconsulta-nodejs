@@ -21,6 +21,7 @@
     "paths": {
       "@enum/*": ["src/enum/*"],
       "@utils/*": ["src/utils/*"],
+      "@config/*": ["src/config/*"],
       "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
       "@database/*": ["src/database/*"],
