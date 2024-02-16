@@ -171,7 +171,7 @@ describe('VehicleService', () => {
         expect(service.update(id, data)).rejects.toThrow('Company not found');
         expect(
           service.update(id, data),
-        ).rejects.toThrowErrorMatchingInlineSnapshot();
+        ).rejects.toThrowErrorMatchingInlineSnapshot(`"Company not found"`);
         expect(vehicleRepository.exists).toHaveBeenCalledTimes(1);
         expect(vehicleRepository.exists).toHaveBeenCalledWith(id);
         expect(companyRepository.exists).toHaveBeenCalledTimes(1);
