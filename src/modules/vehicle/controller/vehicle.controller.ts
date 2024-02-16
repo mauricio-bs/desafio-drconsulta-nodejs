@@ -13,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -41,6 +42,7 @@ export class VehicleController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   // Documentation
+  @ApiBearerAuth()
   @ApiBody({ type: CreateVehicleDTO })
   @ApiCreatedResponse({ description: 'Vehicle created!', type: Vehicle })
   async create(@Body() data: CreateVehicleDTO): Promise<Vehicle> {
@@ -51,6 +53,7 @@ export class VehicleController {
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'vehicle_id' })
   @ApiBody({ type: UpdateVehicleDTO })
   @ApiOkResponse({ description: 'Vehicle updated', type: Vehicle })
@@ -65,6 +68,7 @@ export class VehicleController {
   @UseGuards(JWTAuthGuard)
   @Delete('/:id')
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'vehicle_id' })
   @ApiNoContentResponse({ description: 'Vehicle deleted' })
   @ApiNotFoundResponse({ description: 'Vehicle not found' })
@@ -77,6 +81,7 @@ export class VehicleController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'vehicle_id' })
   @ApiOkResponse({ description: 'Vehicle found', type: Vehicle })
   async findOneById(@Param('id', ParseUUIDPipe) id: string): Promise<Vehicle> {
@@ -87,6 +92,7 @@ export class VehicleController {
   @Get()
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiQuery({ type: FindManyVehiclesDTO, name: 'filters' })
   @ApiOkResponse({ type: PaginatedVehicles })
   async findAll(

@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -50,6 +51,7 @@ export class UserController {
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'user_id' })
   @ApiBody({ type: UpdateUserDTO })
   @ApiOkResponse({ description: 'Updated user', type: User })
@@ -70,6 +72,7 @@ export class UserController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'user_id' })
   @ApiNoContentResponse({ description: 'User deleted' })
   @ApiNotFoundResponse({ description: 'User not found' })
@@ -87,6 +90,7 @@ export class UserController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'user_id' })
   @ApiOkResponse({ description: 'User found', type: User })
   async findById(

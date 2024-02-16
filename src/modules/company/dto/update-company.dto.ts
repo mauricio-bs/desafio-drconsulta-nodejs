@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
   IsNumber,
@@ -29,26 +30,31 @@ export class UpdateCompanyDTO
       >
     >
 {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   name?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Matches('') // TODO: Add cnpj validation regex
   document?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsPhoneNumber()
   phone?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @IsInt()
   @Min(0)
   car_parking_spaces?: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @IsInt()

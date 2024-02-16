@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -42,6 +43,7 @@ export class CompanyController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   // Documentation
+  @ApiBearerAuth()
   @ApiBody({ type: CreateCompanyDTO, required: true })
   @ApiCreatedResponse({ description: 'Company created!', type: Company })
   @ApiBadRequestResponse({ description: 'Invalid data types / Missing data' })
@@ -53,6 +55,7 @@ export class CompanyController {
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'company_id', required: true })
   @ApiBody({ type: UpdateCompanyDTO, required: false })
   @ApiOkResponse({ description: 'Company updated!', type: Company })
@@ -69,6 +72,7 @@ export class CompanyController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'company_id', required: true })
   @ApiOkResponse({ description: 'Company found!', type: Company })
   @ApiNotFoundResponse({ description: 'Company not found' })
@@ -80,6 +84,7 @@ export class CompanyController {
   @Get()
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiQuery({ type: FindManyCompaniesDTO, required: false, name: 'filters' })
   @ApiOkResponse({ description: 'OK', type: PaginatedCompaniesDTO })
   @ApiBadRequestResponse({ description: 'Invalid filter types' })
@@ -93,6 +98,7 @@ export class CompanyController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'company_id', required: true })
   @ApiNoContentResponse({ description: 'Company deleted' })
   @ApiNotFoundResponse({ description: 'Company not found' })

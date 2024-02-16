@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsOptional,
@@ -25,23 +26,28 @@ export class CreateUserDTO
       | 'softRemove'
     >
 {
+  @ApiProperty()
   @IsString()
   name: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(4)
   username: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(8)
   @Matches(`^(?=.*[A-Z])(?=.*[!#@$%&])(?=.*[0-9])(?=.*[a-z]).{8,}$`)
   password: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(8)
   @Match('password')
   confirm_password: string;
 
+  @ApiProperty()
   @IsOptional()
   @IsBoolean()
   is_active: boolean = true;

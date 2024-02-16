@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, IsUUID } from 'class-validator';
 
 import { Vehicle } from '@entities/Vehicle.entity';
@@ -21,18 +22,23 @@ export class CreateVehicleDTO
       | 'reload'
     >
 {
+  @ApiProperty()
   @IsString()
   brand: string;
 
+  @ApiProperty()
   @IsString()
   color: string;
 
+  @ApiProperty({ enum: EVehicleType })
   @IsEnum(EVehicleType)
   type: EVehicleType;
 
+  @ApiProperty()
   @IsString()
   licence_plate: string;
 
+  @ApiProperty()
   @IsUUID('4')
   company_id: string;
 }

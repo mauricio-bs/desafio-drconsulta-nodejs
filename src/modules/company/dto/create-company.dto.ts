@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsInt,
@@ -31,25 +32,32 @@ class CreateAddress
       | 'softRemove'
     >
 {
+  @ApiProperty()
   @IsInt()
   number: number;
 
+  @ApiProperty()
   @IsString()
   address: string;
 
+  @ApiProperty()
   @IsString()
   country: string;
 
+  @ApiProperty()
   @IsString()
   state: string;
 
+  @ApiProperty()
   @IsString()
   city: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   complement?: string;
 
+  @ApiProperty()
   @Transform(({ value }) => value.match(/\d+/g).join(''))
   @IsString()
   zipcode: string;
@@ -73,30 +81,36 @@ export class CreateCompanyDTO
       | 'softRemove'
     >
 {
+  @ApiProperty()
   @IsString()
   name: string;
 
+  @ApiProperty()
   @Transform(({ value }) => value.match(/\d+/g).join(''))
   @IsString()
   @Matches(`\d{2}.?\d{3?\d{3}/?\d{4?\d{2}`)
   document: string;
 
+  @ApiProperty()
   @IsString()
   @IsPhoneNumber()
   phone: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @IsInt()
   @Min(0)
   car_parking_spaces: number = 0;
 
+  @ApiProperty()
   @IsOptional()
   @IsNumber()
   @IsInt()
   @Min(0)
   motorcycle_parking_spaces: number = 0;
 
+  @ApiProperty()
   @IsObject()
   @ValidateNested()
   address: CreateAddress;

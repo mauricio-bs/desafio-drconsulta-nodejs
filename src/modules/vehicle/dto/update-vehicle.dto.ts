@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 import { Vehicle } from '@entities/Vehicle.entity';
@@ -22,22 +23,27 @@ export class UpdateVehicleDTO
       >
     >
 {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   brand?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   color?: string;
 
+  @ApiPropertyOptional({ enum: EVehicleType })
   @IsOptional()
   @IsEnum(EVehicleType)
   type?: EVehicleType;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   licence_plate?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
   company_id?: string;

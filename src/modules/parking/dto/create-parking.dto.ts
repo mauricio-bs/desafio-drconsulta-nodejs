@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDateString, IsOptional, IsString, IsUUID } from 'class-validator';
 
 import { Parking } from '@entities/Parking.entity';
@@ -19,17 +20,21 @@ export class CreateParkingDTO
       | 'softRemove'
     >
 {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   observations?: string;
 
+  @ApiProperty()
   @IsDateString()
   started_at: Date;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
   ended_at?: Date;
 
+  @ApiProperty()
   @IsUUID('4')
   vehicle_id: string;
 }

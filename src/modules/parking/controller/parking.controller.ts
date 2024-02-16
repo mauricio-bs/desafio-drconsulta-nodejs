@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -42,6 +43,7 @@ export class ParkingController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   // Documentation
+  @ApiBearerAuth()
   @ApiBody({ type: CreateParkingDTO })
   @ApiCreatedResponse({ description: 'Parking created', type: Parking })
   @ApiBadRequestResponse({ description: 'Invalid data' })
@@ -53,6 +55,7 @@ export class ParkingController {
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'parking_id' })
   @ApiBody({ type: UpdateParkingDTO })
   @ApiOkResponse({ description: 'Parking updated', type: Parking })
@@ -67,6 +70,7 @@ export class ParkingController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'parking_id' })
   @ApiNoContentResponse({ description: 'Parking deleted' })
   @ApiNotFoundResponse({ description: 'Parking not found' })
@@ -78,6 +82,7 @@ export class ParkingController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiParam({ name: 'parking_id' })
   @ApiOkResponse({ description: 'Parking found', type: Parking })
   async findOneById(@Param('id', ParseUUIDPipe) id: string): Promise<Parking> {
@@ -88,6 +93,7 @@ export class ParkingController {
   @Get()
   @HttpCode(HttpStatus.OK)
   // Documentation
+  @ApiBearerAuth()
   @ApiQuery({ type: FindManyParkingsDTO })
   @ApiOkResponse({ description: 'Parkings found', type: PaginatedParkingDTO })
   async findall(
