@@ -26,7 +26,8 @@ export default {
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/**/test*/**/*ts',
+    '!<rootDir>/src/**/*.spec.ts',
+    '!<rootDir>/src/**/*{M,m}ock*/*.spec.ts',
     '!<rootDir>/src/*.ts',
     '!<rootDir>/src/main.ts',
     '!<rootDir>/src/config/*',
@@ -197,4 +198,6 @@ export default {
 
   // Default timeout of a test in milliseconds, default is 5000.
   testTimeout: 40000,
+
+  prettierPath: null,
 };
